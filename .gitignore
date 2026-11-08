@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+data/generated/*.csv
+data/ground_truth/*.csv
+!data/generated/.gitkeep
+!data/ground_truth/.gitkeep

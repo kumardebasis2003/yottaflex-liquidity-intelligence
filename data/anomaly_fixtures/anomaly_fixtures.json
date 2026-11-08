@@ -1,0 +1,35 @@
+{
+    "cutoff_date": "2026-11-08",
+    "balance_mismatch": {
+        "record_id": "BANKACC-ENT-000001-001",
+        "closing_balance_adjustment": 1000.0
+    },
+    "missing_fx_rate": {
+        "record_id": "FX-TEST-USD-001",
+        "currency": "USD",
+        "forecast_date": "1900-01-01",
+        "amount": 1000.0
+    },
+    "duplicate_cash_flow": {
+        "record_id": "CF-2026-000001"
+    },
+    "actual_after_cutoff": {
+        "record_id": "ACTUAL-TEST-001",
+        "transaction_date": "2026-11-09",
+        "amount": -500.0,
+        "currency": "INR"
+    },
+    "mixed_currency": {
+        "record_id": "MIXED-CURRENCY-TEST-001",
+        "aggregation_id": "MIXED-001",
+        "currencies": [
+            "INR",
+            "USD"
+        ],
+        "converted_to_base": false,
+        "amounts": [
+            1000.0,
+            100.0
+        ]
+    }
+}
