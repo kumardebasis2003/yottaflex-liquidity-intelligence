@@ -1,61 +1,215 @@
-# YottaFlex Liquidity Intelligence Platform
+# YottaFlex – Liquidity Intelligence Platform
 
-A synthetic-data MVP for consolidating legal entities, bank accounts, ledger activity and expected cash flows; forecasting short-term liquidity under base, delayed-receipt and stress scenarios; and detecting selected data-quality exceptions.
+An AI-ready Liquidity Intelligence Platform designed to help treasury teams consolidate financial data, forecast 30-day cash positions, analyze liquidity scenarios, and detect financial data anomalies.
 
-## Requirements
-- Python 3.10+
-- PostgreSQL 14+
-- Windows PowerShell (commands below)
+## Project Overview
 
-## Setup
-```powershell
+YottaFlex provides a centralized view of financial positions using synthetic financial data, a PostgreSQL database, a FastAPI backend, and an interactive Streamlit dashboard.
+
+## Key Features
+
+- Financial data consolidation across legal entities and bank accounts.
+- 30-day liquidity forecasting.
+- Base, Delayed Receipt, and Stress scenarios.
+- Multi-currency conversion into INR.
+- Exception detection and monitoring.
+- Ground-truth anomaly validation.
+- CSV and JSON forecast exports.
+- Interactive financial dashboard.
+
+## Dashboard Preview
+
+### Executive Overview
+![Executive Overview](screenshots/screencapture-localhost-8501-2026-11-08-11_23_36.png)
+
+### Liquidity Forecast
+![Liquidity Forecast](screenshots/screencapture-localhost-8501-2026-11-08-11_23_53.png)
+
+### Scenario Analysis
+![Scenario Analysis](screenshots/screencapture-localhost-8501-2026-11-08-11_24_14.png)
+
+### Exception Monitoring
+![Exception Monitoring](screenshots/screencapture-localhost-8501-2026-11-08-11_24_30.png)
+
+### Data Validation
+![Data Validation](screenshots/screencapture-localhost-8501-2026-11-08-11_24_55.png)
+
+## Technology Stack
+
+- **Backend:** Python, FastAPI
+- **Database:** PostgreSQL
+- **ORM:** SQLAlchemy
+- **Dashboard:** Streamlit
+- **Data Processing:** Pandas, NumPy
+- **API Testing:** Python Requests
+- **Version Control:** Git, GitHub
+
+## Synthetic Dataset
+
+| Data Entity | Records |
+|---|---:|
+| Legal Entities | 30 |
+| Bank Accounts | 150 |
+| Ledger Entries | 100,000 |
+| Receivables | 10,000 |
+| Payables | 10,000 |
+| Cash Flow Forecasts | 20,000 |
+| Currency Rates | 305 |
+| Liquidity Scenarios | 3 |
+| Forecast Runs | 3 |
+
+**Dataset seed:** `20261022`
+
+Generated CSV files are excluded from version control. Use the data generation script to recreate the dataset.
+
+## Forecast Scenarios
+
+| Scenario | Assumption |
+|---|---|
+| BASE | Normal expected cash flows |
+| DELAYED_RECEIPT | Receipts delayed by 7 days |
+| STRESS | Receipts delayed by 14 days and outflows increased by 15% |
+
+## Project Structure
+
+```text
+yottaflex-liquidity-intelligence/
+├── app/
+│   ├── db.py
+│   ├── forecast.py
+│   ├── main.py
+│   └── models.py
+├── data/
+│   └── anomaly_fixtures/
+├── docs/
+│   ├── AI_PROMPT_HISTORY.md
+│   └── DATA_DICTIONARY.md
+├── screenshots/
+├── scripts/
+│   ├── generate_data.py
+│   ├── generate_anomaly_fixtures.py
+│   ├── load_postgres.py
+│   └── test_api.py
+├── tests/
+│   └── test_forecast.py
+├── dashboard.py
+├── requirements.txt
+├── README.md
+└── .env.example
+```
+
+## Installation and Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/kumardebasis2003/yottaflex-liquidity-intelligence.git
+cd yottaflex-liquidity-intelligence
+```
+
+### 2. Create a virtual environment
+
+```bash
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-Copy-Item .env.example .env
-```
-Edit `.env` and set your PostgreSQL password. Create the database:
-```sql
-CREATE DATABASE yottaflex_liquidity;
 ```
 
-## Generate synthetic data
-Starter:
-```powershell
-python scripts/generate_data.py --scale small --seed 20261022
+Activate on Windows CMD:
+
+```cmd
+.venv\Scripts\activate.bat
 ```
-Full assignment volume:
-```powershell
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure environment variables
+
+Copy `.env.example` to `.env` and configure your PostgreSQL connection.
+
+Never commit your `.env` file or database credentials.
+
+### 5. Generate synthetic data
+
+```bash
 python scripts/generate_data.py --scale full --seed 20261022
 ```
-Ground truth labels are exported separately to `data/ground_truth/ground_truth.csv`.
 
-## Load PostgreSQL
-```powershell
+### 6. Load data into PostgreSQL
+
+```bash
 python scripts/load_postgres.py
 ```
-The loader truncates the synthetic demo tables before loading. Do not use it against production data.
 
-## Run API
-```powershell
-uvicorn app.main:app --reload
+### 7. Start the FastAPI backend
+
+```bash
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
-Open http://127.0.0.1:8000/docs
 
-## Run dashboard
-In another PowerShell window:
-```powershell
-.venv\Scripts\Activate.ps1
+API documentation:
+
+http://127.0.0.1:8000/docs
+
+### 8. Start the Streamlit dashboard
+
+Open another terminal:
+
+```bash
 streamlit run dashboard.py
 ```
 
-## Tests
-```powershell
-pytest -q
+Dashboard:
+
+http://localhost:8501
+
+## API Endpoints
+
+| Endpoint | Description |
+|---|---|
+| `/health` | Health check |
+| `/api/v1/summary` | Financial data summary |
+| `/api/v1/forecast` | Liquidity forecast |
+| `/api/v1/forecast/export.csv` | CSV forecast export |
+| `/api/v1/forecast/export.json` | JSON forecast export |
+| `/api/v1/exceptions` | Exception detection |
+| `/api/v1/exceptions/export.csv` | Exception CSV export |
+| `/api/v1/validation` | Ground-truth validation |
+
+## Testing
+
+Run API tests:
+
+```bash
+python scripts/test_api.py
 ```
 
-## Important assumptions and limitations
-- All records are synthetic and generated with NumPy seed 20261022.
-- INR conversion in the MVP uses documented illustrative fallback rates in `app/forecast.py`; the generated daily FX-rate table is included for later date-specific rate integration.
-- The MVP calculates 30-day scenarios and detects balance mismatches and duplicate forecast records. Missing FX, actual-after-cutoff and mixed-currency cases are documented as ground-truth test fixtures; they should be expanded into executable exception tests before production use.
-- This is a demonstration, not a banking or treasury production system.
+Latest verification:
+
+- API tests passed: **12**
+- API tests failed: **0**
+- Ground-truth validation: **5/5 passed**
+
+## Documentation
+
+- [Data Dictionary](docs/DATA_DICTIONARY.md)
+- [AI Prompt History](docs/AI_PROMPT_HISTORY.md)
+
+## Important Notes
+
+- This project uses synthetic financial data.
+- Forecasts are scenario-based model outputs, not actual banking predictions.
+- Stress scenario negative balances represent modeled liquidity shortfalls.
+- Generated datasets can be reproduced using the supplied generation script.
+
+## Author
+
+**Debasis Kumar Ghadai**
+
+GitHub: [@kumardebasis2003](https://github.com/kumardebasis2003)
+
+---
+
+*YottaFlex Liquidity Intelligence Platform – Treasury Analytics, Cash Forecasting and Risk Monitoring.*
